@@ -1,8 +1,84 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "GitHub Actions Deployment Example";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">GitHub Actions Deployment Example</h1>
+    <p class="lead">This is the first example for pushing from GitHub Actions to Azure App Service</p>
+    
+    <div class="row mt-5">
+        <div class="col-md-8 mx-auto">
+            <img src="https://user-images.githubusercontent.com/9147189/270100208-de740072-fbfa-4d40-aa94-ae017e5f641e.png" 
+                 alt="GitHub Actions Workflow" 
+                 class="img-fluid rounded shadow mb-4" 
+                 style="max-width: 100%; height: auto;">
+        </div>
+    </div>
+    
+    <div class="row mt-5">
+        <div class="col-md-10 mx-auto">
+            <h2 class="mb-4">Advantages of GitHub Actions for Deployment</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card h-100 mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">🚀 Automated Deployment</h5>
+                            <p class="card-text">Automatically deploy your application every time you push code to the main branch, eliminating manual deployment steps.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card h-100 mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">⚡ Fast & Reliable</h5>
+                            <p class="card-text">Consistent, repeatable deployments with built-in caching and parallel job execution for faster build times.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card h-100 mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">🔒 Secure Secrets Management</h5>
+                            <p class="card-text">Safely store and use sensitive information like API keys and connection strings through GitHub's encrypted secrets.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card h-100 mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">📊 Built-in Monitoring</h5>
+                            <p class="card-text">Track deployment status, view logs, and get notifications about build and deployment results directly in GitHub.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card h-100 mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">🔄 Version Control Integration</h5>
+                            <p class="card-text">Every deployment is tied to a specific commit, making it easy to track changes and rollback if needed.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card h-100 mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">💰 Cost Effective</h5>
+                            <p class="card-text">Free for public repositories and generous free minutes for private repositories, reducing CI/CD costs.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-5">
+        <div class="col-md-8 mx-auto">
+            <div class="alert alert-info">
+                <h4 class="alert-heading">🎯 This Deployment</h4>
+                <p>This application was automatically deployed to Azure App Service using GitHub Actions. The workflow builds the .NET application, runs tests, and deploys to production whenever code is pushed to the main branch.</p>
+                <hr>
+                <p class="mb-0">Check out the <a href="https://github.com/BPMSTC/WP1-Deployment-Example/actions" target="_blank">GitHub Actions tab</a> to see the deployment history and logs.</p>
+            </div>
+        </div>
+    </div>
 </div>
