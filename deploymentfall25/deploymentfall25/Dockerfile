@@ -18,15 +18,15 @@ COPY . .
 
 # Restore NuGet packages
 # This downloads all dependencies specified in the .csproj file
-# We specify the full path to the project file for clarity
-RUN dotnet restore ./deploymentfall25/deploymentfall25/deploymentfall25.csproj
+# Since we're building from the project directory, we use the local project file
+RUN dotnet restore deploymentfall25.csproj
 
 # Publish the application for production
 # -c Release: Build in Release configuration for optimal performance
 # -o /out: Output directory for the published application
 # --no-restore: Skip package restoration since we already did it above
 # This creates a self-contained deployment with all necessary files
-RUN dotnet publish ./deploymentfall25/deploymentfall25/deploymentfall25.csproj -c Release -o /out --no-restore
+RUN dotnet publish deploymentfall25.csproj -c Release -o /out --no-restore
 
 # ---- Runtime Stage ----
 # Use the smaller ASP.NET runtime image for the final container
