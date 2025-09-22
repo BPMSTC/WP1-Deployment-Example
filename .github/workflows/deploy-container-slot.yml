@@ -9,8 +9,8 @@ env:
   RG: rg-WebProgramming1-Fall2025-bs
   WEBAPP: wp1-brent-presley-fa25
   SLOT: container-demo
-  ACR_NAME: wp1fa25acr                  # no .azurecr.io suffix
-  IMAGE_NAME: wp1app                    # repo name inside ACR
+  ACR_NAME: wp1fa25acr            # no .azurecr.io suffix
+  IMAGE_NAME: wp1app              # repo name inside ACR
 
 jobs:
   build-and-deploy:
@@ -32,17 +32,27 @@ jobs:
              "tenantId":"${{ secrets.AZURE_TENANT_ID }}",
              "subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}"}
 
-      - name: Build image (Dockerfile in project directory)
+      # Build from repo root using the root Dockerfile
+      - name: Build image (Dockerfile at repo root)
         run: |
           TAG=${{ github.sha }}
-          docker build -t $ACR_NAME.azurecr.io/$IMAGE_NAME:$TAG ./deploymentfall25/deploymentfall25
+          docker build -f Dockerfile -t $ACR_NAME.azurecr.io/$IMAGE_NAME:$TAG .
           echo "TAG=$TAG" >> $GITHUB_ENV
 
-      - name: ACR Login
+      - name: ACR Login (RBAC)
         run: az acr login --name $ACR_NAME
 
       - name: Push image to ACR
         run: docker push $ACR_NAME.azurecr.io/$IMAGE_NAME:${TAG}
+
+      # --- Sanity verifier #1: show the image we just built/pushed ---
+      - name: Show image tag
+        run: |
+          echo "Using image: $ACR_NAME.azurecr.io/$IMAGE_NAME:${TAG}"
+          echo "image=$ACR_NAME.azurecr.io/$IMAGE_NAME:${TAG}" >> $GITHUB_STEP_SUMMARY
+          # Optional: assert the tag exists in ACR
+          az acr repository show-tags -n $ACR_NAME --repository $IMAGE_NAME \
+            --query "[?@=='${TAG}']" -o tsv
 
       - name: Point SLOT to new image
         run: |
@@ -51,12 +61,17 @@ jobs:
             --docker-custom-image-name $ACR_NAME.azurecr.io/$IMAGE_NAME:${TAG} \
             --docker-registry-server-url https://$ACR_NAME.azurecr.io
 
-      # (Idempotent) make sure port is set for Linux container apps
+      # Keep port aligned with ASPNETCORE_URLS=http://+:8080 in your Dockerfile
       - name: Ensure WEBSITES_PORT=8080 on slot
         run: |
           az webapp config appsettings set \
             -g $RG -n $WEBAPP --slot $SLOT \
             --settings WEBSITES_PORT=8080
+
+      # --- Sanity verifier #2: confirm the slot is set to that exact tag ---
+      - name: Confirm slot container config
+        run: |
+          az webapp config container show -g $RG -n $WEBAPP --slot $SLOT -o jsonc
 
       - name: Restart slot
         run: az webapp restart -g $RG -n $WEBAPP --slot $SLOT
