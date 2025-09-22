@@ -16,6 +16,9 @@ WORKDIR /src
 # This includes the project files, source code, and configuration files
 COPY . .
 
+# move into the project directory (adjust ONLY if your path/name differs)
+WORKDIR /src/deploymentfall25/deploymentfall25
+
 # Restore NuGet packages
 # This downloads all dependencies specified in the .csproj file
 # Since we're building from the project directory, we use the local project file
