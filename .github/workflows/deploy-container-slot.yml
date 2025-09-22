@@ -32,11 +32,11 @@ jobs:
              "tenantId":"${{ secrets.AZURE_TENANT_ID }}",
              "subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}"}
 
-      # Build from repo root using the root Dockerfile
-      - name: Build image (Dockerfile at repo root)
+      # Build from repo root using the project Dockerfile
+      - name: Build image (Dockerfile in project directory)
         run: |
           TAG=${{ github.sha }}
-          docker build -f Dockerfile -t $ACR_NAME.azurecr.io/$IMAGE_NAME:$TAG .
+          docker build -f deploymentfall25/deploymentfall25/Dockerfile -t $ACR_NAME.azurecr.io/$IMAGE_NAME:$TAG .
           echo "TAG=$TAG" >> $GITHUB_ENV
 
       - name: ACR Login (RBAC)
