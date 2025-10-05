@@ -58,8 +58,8 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-results
-          path: TestResults
+            name: test-results
+            path: TestResults
 
       - name: Install ReportGenerator
         run: dotnet tool update --global dotnet-reportgenerator-globaltool
@@ -73,7 +73,7 @@ jobs:
           reportgenerator \
             -reports:TestResults/**/coverage.cobertura.xml \
             -targetdir:$REPORT_DIR \
-            -reporttypes:Html;Cobertura;TextSummary
+            -reporttypes:"Html;Cobertura;TextSummary"
           echo "--- Deployment Workflow Coverage Summary ---" >> $GITHUB_STEP_SUMMARY
           if [ -f $REPORT_DIR/Summary.txt ]; then
             cat $REPORT_DIR/Summary.txt >> $GITHUB_STEP_SUMMARY

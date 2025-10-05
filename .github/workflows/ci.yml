@@ -66,7 +66,7 @@ jobs:
           reportgenerator \
             -reports:TestResults/Unit/**/coverage.cobertura.xml \
             -targetdir:$REPORT_DIR \
-            -reporttypes:Html;Cobertura;TextSummary
+            -reporttypes:"Html;Cobertura;TextSummary"
           echo "--- Unit Test Coverage Summary ---" >> $GITHUB_STEP_SUMMARY
           if [ -f $REPORT_DIR/Summary.txt ]; then
             cat $REPORT_DIR/Summary.txt >> $GITHUB_STEP_SUMMARY
