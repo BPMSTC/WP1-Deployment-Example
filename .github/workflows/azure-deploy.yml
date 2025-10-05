@@ -11,6 +11,7 @@ env:
   PUBLISH_DIR: './publish'
   PROJECT_PATH: 'deploymentfall25/deploymentfall25/deploymentfall25.csproj'
   TEST_PROJECT_PATH: 'deploymentfall25/deploymentfall25.Tests/deploymentfall25.Tests.csproj'
+  SOLUTION_FILE: 'WP1-Deployment-Example.sln'
 
 jobs:
   build:
@@ -32,21 +33,26 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Restore
-        run: dotnet restore ${{ env.PROJECT_PATH }}
+        run: dotnet restore ${{ env.SOLUTION_FILE }}
 
-      - name: Build (Release)
+      - name: Build (Release - App)
         run: dotnet build ${{ env.PROJECT_PATH }} --configuration Release --no-restore
 
-      # Run only unit tests (exclude integration) from the actual TEST project so results & coverage exist.
+      - name: Build (Release - Tests)
+        run: dotnet build ${{ env.TEST_PROJECT_PATH }} --configuration Release --no-restore
+
+      # Run only unit tests (exclude integration) and collect coverage. Use solution so build/test context is complete.
       - name: Test (Unit + Coverage)
         run: |
-          dotnet test ${{ env.TEST_PROJECT_PATH }} \
+          mkdir -p TestResults
+          dotnet test ${{ env.SOLUTION_FILE }} \
             --configuration Release \
-            --no-build \
             --filter "Category!=Integration" \
             --logger "trx;LogFileName=tests.trx" \
             --results-directory ./TestResults \
-            --collect "XPlat Code Coverage"
+            --collect "XPlat Code Coverage" \
+            -v minimal
+          echo "Listing produced test result files:" && find TestResults -type f -maxdepth 3 || true
 
       - name: Upload test results
         if: always()
@@ -62,6 +68,8 @@ jobs:
         run: |
           REPORT_DIR=CoverageReport
           mkdir -p $REPORT_DIR
+          # Show coverage files discovered (debug aid)
+            echo "Discovered coverage files:" && find TestResults -type f -name 'coverage.cobertura.xml' -maxdepth 5 || true
           reportgenerator \
             -reports:TestResults/**/coverage.cobertura.xml \
             -targetdir:$REPORT_DIR \
@@ -69,6 +77,8 @@ jobs:
           echo "--- Deployment Workflow Coverage Summary ---" >> $GITHUB_STEP_SUMMARY
           if [ -f $REPORT_DIR/Summary.txt ]; then
             cat $REPORT_DIR/Summary.txt >> $GITHUB_STEP_SUMMARY
+          else
+            echo "(No Summary.txt generated - verify coverage files)" >> $GITHUB_STEP_SUMMARY
           fi
 
       - name: Upload coverage artifacts
