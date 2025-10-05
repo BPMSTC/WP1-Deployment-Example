@@ -37,6 +37,46 @@ jobs:
       - name: Build (Release)
         run: dotnet build ${{ env.PROJECT_PATH }} --configuration Release --no-restore
 
+      # Step 1: Test execution (gates deployment) + coverage collection for parity with CI.
+      - name: Test (Unit + Coverage)
+        run: |
+          dotnet test ${{ env.PROJECT_PATH }} \
+            --configuration Release \
+            --no-build \
+            --logger "trx;LogFileName=tests.trx" \
+            --results-directory ./TestResults \
+            --collect "XPlat Code Coverage"
+
+      - name: Upload test results
+        if: always() # attempt to upload even if tests fail (for diagnostics)
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TestResults
+
+      - name: Install ReportGenerator
+        run: dotnet tool update --global dotnet-reportgenerator-globaltool
+
+      - name: Generate Coverage Report
+        run: |
+          REPORT_DIR=CoverageReport
+          mkdir -p $REPORT_DIR
+          reportgenerator \
+            -reports:TestResults/**/coverage.cobertura.xml \
+            -targetdir:$REPORT_DIR \
+            -reporttypes:Html;Cobertura;TextSummary
+          echo "--- Deployment Workflow Coverage Summary ---" >> $GITHUB_STEP_SUMMARY
+          if [ -f $REPORT_DIR/Summary.txt ]; then
+            cat $REPORT_DIR/Summary.txt >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Upload coverage artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy-coverage-report
+          path: CoverageReport
+
       - name: Publish
         run: dotnet publish ${{ env.PROJECT_PATH }} --configuration Release --no-build --output ${{ env.PUBLISH_DIR }}
 

@@ -1,0 +1,88 @@
+name: CI - Build & Test (No Deploy)
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+  workflow_dispatch: {}
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  SOLUTION_FILE: 'WP1-Deployment-Example.sln'
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Cache NuGet
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore
+        run: dotnet restore ${{ env.SOLUTION_FILE }}
+
+      - name: Build (Release)
+        run: dotnet build ${{ env.SOLUTION_FILE }} --configuration Release --no-restore
+
+      - name: Test (Unit Only + Coverage)
+        run: |
+          dotnet test ${{ env.SOLUTION_FILE }} \
+            --configuration Release \
+            --no-build \
+            --logger "trx;LogFileName=unit-tests.trx" \
+            --results-directory ./TestResults/Unit \
+            --collect "XPlat Code Coverage" \
+            --filter "Category!=Integration"
+
+      - name: Test (Integration)
+        run: |
+          dotnet test ${{ env.SOLUTION_FILE }} \
+            --configuration Release \
+            --no-build \
+            --logger "trx;LogFileName=integration-tests.trx" \
+            --results-directory ./TestResults/Integration \
+            --filter "Category=Integration"
+
+      - name: Install ReportGenerator
+        run: dotnet tool update --global dotnet-reportgenerator-globaltool
+
+      - name: Generate Coverage Report (from Unit run only)
+        run: |
+          REPORT_DIR=CoverageReport
+          mkdir -p $REPORT_DIR
+          reportgenerator \
+            -reports:TestResults/Unit/**/coverage.cobertura.xml \
+            -targetdir:$REPORT_DIR \
+            -reporttypes:Html;Cobertura;TextSummary
+          echo "--- Unit Test Coverage Summary ---" >> $GITHUB_STEP_SUMMARY
+          if [ -f $REPORT_DIR/Summary.txt ]; then
+            cat $REPORT_DIR/Summary.txt >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "(Integration tests currently excluded from coverage aggregation)" >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-test-results
+          path: TestResults
+
+      - name: Upload coverage artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-coverage-report
+          path: CoverageReport

@@ -1,3 +1,6 @@
 <Solution>
+  <Folder Name="/deploymentfall25/">
+    <Project Path="deploymentfall25/deploymentfall25.Tests/deploymentfall25.Tests.csproj" />
+  </Folder>
   <Project Path="deploymentfall25/deploymentfall25.csproj" />
 </Solution>
