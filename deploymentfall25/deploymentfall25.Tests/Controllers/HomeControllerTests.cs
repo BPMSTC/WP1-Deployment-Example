@@ -11,6 +11,7 @@ public class HomeControllerTests
 {
     private static HomeController CreateController()
     {
+        // Use NullLogger to avoid needing a real logger implementation
         var logger = NullLogger<HomeController>.Instance;
         return new HomeController(logger);
     }
