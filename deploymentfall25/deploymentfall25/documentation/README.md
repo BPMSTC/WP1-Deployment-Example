@@ -1,8 +1,10 @@
 # WP1-Deployment-Example
 A comprehensive example demonstrating ASP.NET Core deployment with GitHub Actions, Azure App Service, and automated testing.
 
+> **Spring 2026 Update:** This repository is now maintained as Spring 2026 course work for Web Programming 1.
+
 ## 🎯 Project Overview
-This repository serves as a learning resource for students in Web Programming 1, demonstrating:
+This repository serves as a Spring 2026 learning resource for students in Web Programming 1, demonstrating:
 - **ASP.NET Core 8.0** web application development
 - **GitHub Actions** CI/CD pipeline setup
 - **Azure App Service** deployment (both code and container-based)
@@ -20,9 +22,9 @@ By the end of this tutorial, students will understand:
 6. How to gather and interpret automated test coverage metrics
 7. How to differentiate between unit and integration tests and run them separately
 
-## 🚀 Current Status
+## 🚀 Spring 2026 Status
 
-### ✅ Completed Steps
+### ✅ Completed Foundations (carried into Spring 2026)
 - [x] **Project Analysis**
 - [x] **Deployment Setup** (base workflows)
 - [x] **Containerization** (multi-stage Dockerfile)
@@ -32,10 +34,10 @@ By the end of this tutorial, students will understand:
 - [x] **Step 4: Coverage Reporting**
 - [x] **Step 5 (Initial Integration Tests)**: Added `HomeControllerIntegrationTests`
 
-### 🔄 In Progress
+### 🔄 In Progress (Spring 2026)
 - [ ] **Refinements**: Badges, coverage thresholds, environment protection docs, integration coverage strategy
 
-### 📝 Planned / Future Enhancements
+### 📝 Planned Spring 2026 Enhancements
 - [ ] Add additional integration scenarios (form posts, error handling)
 - [ ] Introduce performance or load testing examples (optional extension)
 
